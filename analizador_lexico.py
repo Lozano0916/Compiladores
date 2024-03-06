@@ -1,4 +1,6 @@
 from ply import lex
+import keyword
+
 
 tokens = (
     'NUMERO',
@@ -19,6 +21,9 @@ contadores_tokens = {
     'SIMBOLO_ESPECIAL': 0, 
 }
 
+#palabras reservadas traidas con keyword
+palabras_reservadas = {kw: kw.upper() for kw in keyword.kwlist}
+
 # identificador
 def t_IDENTIFICADOR(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
@@ -28,7 +33,8 @@ def t_IDENTIFICADOR(t):
 
 # palabras reservadas
 def t_PALABRA_RESERVADA(t):
-    r'int|float|string|if|else|while'
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = palabras_reservadas.get(t.value, 'IDENTIFICADOR')
     contadores_tokens['PALABRA_RESERVADA'] += 1
     return t
 
@@ -65,31 +71,19 @@ def t_ANY_error(t):
     print(f"Carácteres no reconocidos: {t.value}")
     t.lexer.skip(1)
 
-# palabras reservadas
-palabras_reservadas = {
-    'int': 'INT',
-    'float': 'FLOAT',
-    'string': 'STRING',
-    'if': 'IF',
-    'else': 'ELSE',
-    'while': 'WHILE',
-}
 
 # lexer
 lexer = lex.lex()
 
 # entrada a analizar 
-entrada = 'a = 4 suma = a + 3'
-lexer.input(entrada)
+entrada = open("analisis.txt", mode="r")
+lexer.input(entrada.read())
 
 while True:
     token = lexer.token()
     if not token:
         break
 
+    print(f"{token.type}: {token.value}")
 
-print("OPERADORES:", contadores_tokens['OPERADOR'])
-print("SIMBOLOS ESPECIALES:", contadores_tokens['SIMBOLO_ESPECIAL'])
-for tipo_token, cantidad in contadores_tokens.items():
-    if tipo_token not in ['OPERADOR', 'SIMBOLO_ESPECIAL']:
-        print(f"{tipo_token}: {cantidad}")
+
