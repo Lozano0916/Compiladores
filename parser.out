@@ -1,0 +1,184 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> definicion_funcion
+Rule 1     definicion_funcion -> COMENTARIO definicion_funcion_no_comentario
+Rule 2     definicion_funcion -> definicion_funcion_no_comentario
+Rule 3     definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+Rule 4     definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+Rule 5     parametros -> IDENTIFICADOR
+Rule 6     parametros -> parametros SIMBOLO_ESPECIAL IDENTIFICADOR
+Rule 7     parametros -> parametros SIMBOLO_ESPECIAL CADENA
+Rule 8     parametros -> parametros SIMBOLO_ESPECIAL NUMERO
+Rule 9     parametros -> parametros SIMBOLO_ESPECIAL OPERADOR
+
+Terminals, with rules where they appear
+
+CADENA               : 7
+COMENTARIO           : 1
+IDENTIFICADOR        : 3 4 5 6
+NUMERO               : 8
+OPERADOR             : 9
+PALABRA_RESERVADA    : 3 4
+SIMBOLO_ESPECIAL     : 3 3 3 4 4 4 6 7 8 9
+error                : 
+
+Nonterminals, with rules where they appear
+
+definicion_funcion   : 0
+definicion_funcion_no_comentario : 1 2
+parametros           : 3 6 7 8 9
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . definicion_funcion
+    (1) definicion_funcion -> . COMENTARIO definicion_funcion_no_comentario
+    (2) definicion_funcion -> . definicion_funcion_no_comentario
+    (3) definicion_funcion_no_comentario -> . PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> . PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+
+    COMENTARIO      shift and go to state 2
+    PALABRA_RESERVADA shift and go to state 4
+
+    definicion_funcion             shift and go to state 1
+    definicion_funcion_no_comentario shift and go to state 3
+
+state 1
+
+    (0) S' -> definicion_funcion .
+
+
+
+state 2
+
+    (1) definicion_funcion -> COMENTARIO . definicion_funcion_no_comentario
+    (3) definicion_funcion_no_comentario -> . PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> . PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+
+    PALABRA_RESERVADA shift and go to state 4
+
+    definicion_funcion_no_comentario shift and go to state 5
+
+state 3
+
+    (2) definicion_funcion -> definicion_funcion_no_comentario .
+
+    $end            reduce using rule 2 (definicion_funcion -> definicion_funcion_no_comentario .)
+
+
+state 4
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA . IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> PALABRA_RESERVADA . IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+
+    IDENTIFICADOR   shift and go to state 6
+
+
+state 5
+
+    (1) definicion_funcion -> COMENTARIO definicion_funcion_no_comentario .
+
+    $end            reduce using rule 1 (definicion_funcion -> COMENTARIO definicion_funcion_no_comentario .)
+
+
+state 6
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR . SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR . SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+
+    SIMBOLO_ESPECIAL shift and go to state 7
+
+
+state 7
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL . SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL . SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL
+
+    SIMBOLO_ESPECIAL shift and go to state 8
+
+
+state 8
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL . parametros SIMBOLO_ESPECIAL
+    (4) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL . SIMBOLO_ESPECIAL
+    (5) parametros -> . IDENTIFICADOR
+    (6) parametros -> . parametros SIMBOLO_ESPECIAL IDENTIFICADOR
+    (7) parametros -> . parametros SIMBOLO_ESPECIAL CADENA
+    (8) parametros -> . parametros SIMBOLO_ESPECIAL NUMERO
+    (9) parametros -> . parametros SIMBOLO_ESPECIAL OPERADOR
+
+    SIMBOLO_ESPECIAL shift and go to state 10
+    IDENTIFICADOR   shift and go to state 9
+
+    parametros                     shift and go to state 11
+
+state 9
+
+    (5) parametros -> IDENTIFICADOR .
+
+    SIMBOLO_ESPECIAL reduce using rule 5 (parametros -> IDENTIFICADOR .)
+
+
+state 10
+
+    (4) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL .
+
+    $end            reduce using rule 4 (definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL .)
+
+
+state 11
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros . SIMBOLO_ESPECIAL
+    (6) parametros -> parametros . SIMBOLO_ESPECIAL IDENTIFICADOR
+    (7) parametros -> parametros . SIMBOLO_ESPECIAL CADENA
+    (8) parametros -> parametros . SIMBOLO_ESPECIAL NUMERO
+    (9) parametros -> parametros . SIMBOLO_ESPECIAL OPERADOR
+
+    SIMBOLO_ESPECIAL shift and go to state 12
+
+
+state 12
+
+    (3) definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL .
+    (6) parametros -> parametros SIMBOLO_ESPECIAL . IDENTIFICADOR
+    (7) parametros -> parametros SIMBOLO_ESPECIAL . CADENA
+    (8) parametros -> parametros SIMBOLO_ESPECIAL . NUMERO
+    (9) parametros -> parametros SIMBOLO_ESPECIAL . OPERADOR
+
+    $end            reduce using rule 3 (definicion_funcion_no_comentario -> PALABRA_RESERVADA IDENTIFICADOR SIMBOLO_ESPECIAL SIMBOLO_ESPECIAL parametros SIMBOLO_ESPECIAL .)
+    IDENTIFICADOR   shift and go to state 13
+    CADENA          shift and go to state 14
+    NUMERO          shift and go to state 15
+    OPERADOR        shift and go to state 16
+
+
+state 13
+
+    (6) parametros -> parametros SIMBOLO_ESPECIAL IDENTIFICADOR .
+
+    SIMBOLO_ESPECIAL reduce using rule 6 (parametros -> parametros SIMBOLO_ESPECIAL IDENTIFICADOR .)
+
+
+state 14
+
+    (7) parametros -> parametros SIMBOLO_ESPECIAL CADENA .
+
+    SIMBOLO_ESPECIAL reduce using rule 7 (parametros -> parametros SIMBOLO_ESPECIAL CADENA .)
+
+
+state 15
+
+    (8) parametros -> parametros SIMBOLO_ESPECIAL NUMERO .
+
+    SIMBOLO_ESPECIAL reduce using rule 8 (parametros -> parametros SIMBOLO_ESPECIAL NUMERO .)
+
+
+state 16
+
+    (9) parametros -> parametros SIMBOLO_ESPECIAL OPERADOR .
+
+    SIMBOLO_ESPECIAL reduce using rule 9 (parametros -> parametros SIMBOLO_ESPECIAL OPERADOR .)
+
