@@ -7,3 +7,9 @@ resultado = suma(5, 3)
 
 # Impresion del resultado
 print("El resultado de la suma es:", resultado)
+
+def ejemplo(parametro1, parametro2):
+    pass
+
+def otra(parametro1):
+    pass
