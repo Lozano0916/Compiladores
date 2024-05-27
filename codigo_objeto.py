@@ -1,122 +1,70 @@
-# generador_codigo.py
 import ast
 
-class GeneradorCodigo:
+class GeneradorCodigoIntermedio:
     def __init__(self):
         self.codigo_intermedio = []
+        self.temporales = 0
 
-    def generar_codigo(self, arbol):
-        self.visit(arbol)
-        return self.codigo_intermedio
+    def nuevo_temporal(self):
+        self.temporales += 1
+        return f't{self.temporales}'
 
-    def visit(self, nodo):
-        print(f"Visitando nodo de tipo: {type(nodo)}")
-        if isinstance(nodo, ast.Module):
-            for stmt in nodo.body:
-                self.visit(stmt)
-        elif isinstance(nodo, ast.FunctionDef):
-            self.visit_functiondef(nodo)
-        elif isinstance(nodo, ast.Assign):
-            self.visit_assign(nodo)
-        elif isinstance(nodo, ast.Expr):
-            self.visit_expr(nodo)
-        elif isinstance(nodo, ast.Return):
-            self.visit_return(nodo)
-        elif isinstance(nodo, ast.Call):
-            self.visit_call(nodo)
-        elif isinstance(nodo, ast.Name):
-            self.visit_name(nodo)
-        elif isinstance(nodo, ast.BinOp):
-            self.visit_binop(nodo)
-        elif isinstance(nodo, ast.Num):
-            self.visit_num(nodo)
-        elif isinstance(nodo, ast.Constant):
-            self.visit_constant(nodo)
+    def generar_codigo(self, nodo):
+        try:
+            if isinstance(nodo, ast.Module):
+                for stmt in nodo.body:
+                    self.generar_codigo(stmt)
+            elif isinstance(nodo, ast.FunctionDef):
+                self.codigo_intermedio.append(f'function {nodo.name}()')
+                for stmt in nodo.body:
+                    self.generar_codigo(stmt)
+                self.codigo_intermedio.append(f'end function {nodo.name}')
+            elif isinstance(nodo, ast.Assign):
+                target = nodo.targets[0]
+                value = self.generar_codigo(nodo.value)
+                if isinstance(target, ast.Name):
+                    self.codigo_intermedio.append(f'{target.id} = {value}')
+                else:
+                    raise NotImplementedError('Asignaciones complejas no están soportadas')
+            elif isinstance(nodo, ast.BinOp):
+                left = self.generar_codigo(nodo.left)
+                right = self.generar_codigo(nodo.right)
+                op = self.obtener_operador(nodo.op)
+                temp = self.nuevo_temporal()
+                self.codigo_intermedio.append(f'{temp} = {left} {op} {right}')
+                return temp
+            elif isinstance(nodo, ast.Constant):
+                return nodo.value
+            elif isinstance(nodo, ast.Name):
+                return nodo.id
+            elif isinstance(nodo, ast.Expr):
+                return self.generar_codigo(nodo.value)
+            elif isinstance(nodo, ast.Call):
+                args = [str(self.generar_codigo(arg)) for arg in nodo.args]
+                func_name = nodo.func.id
+                temp = self.nuevo_temporal()
+                self.codigo_intermedio.append(f'{temp} = {func_name}({", ".join(args)})')
+                return temp
+            elif isinstance(nodo, ast.Return):
+                value = self.generar_codigo(nodo.value)
+                self.codigo_intermedio.append(f'return {value}')
+            else:
+                raise NotImplementedError(f'Nodo no soportado: {type(nodo).__name__}')
+        except NotImplementedError as e:
+            print(f'Error en la generación de código intermedio: {e}')
+
+    def obtener_operador(self, op):
+        if isinstance(op, ast.Add):
+            return '+'
+        elif isinstance(op, ast.Sub):
+            return '-'
+        elif isinstance(op, ast.Mult):
+            return '*'
+        elif isinstance(op, ast.Div):
+            return '/'
         else:
-            raise NotImplementedError(f"Node type {type(nodo)} is not implemented in the generator")
+            raise NotImplementedError(f'Operador no soportado: {type(op).__name__}')
 
-    def visit_functiondef(self, nodo):
-        print(f"Visitando nodo de tipo FunctionDef: {nodo.name}")
-        self.codigo_intermedio.append(f"FUNC_BEGIN {nodo.name}")
-        for stmt in nodo.body:
-            self.visit(stmt)
-        self.codigo_intermedio.append("FUNC_END")
-
-    def visit_assign(self, nodo):
-        print("Visitando nodo de tipo Assign")
-        for target in nodo.targets:
-            if isinstance(target, ast.Name):
-                self.visit(nodo.value)
-                self.codigo_intermedio.append(f"STORE {target.id}")
-
-    def visit_expr(self, nodo):
-        print("Visitando nodo de tipo Expr")
-        self.visit(nodo.value)
-
-    def visit_return(self, nodo):
-        print("Visitando nodo de tipo Return")
-        if nodo.value:
-            self.visit(nodo.value)
-        self.codigo_intermedio.append("RETURN")
-
-    def visit_call(self, nodo):
-        print("Visitando nodo de tipo Call")
-        for arg in nodo.args:
-            self.visit(arg)
-        if isinstance(nodo.func, ast.Name):
-            self.codigo_intermedio.append(f"CALL {nodo.func.id}")
-        else:
-            raise NotImplementedError(f"Function call type {type(nodo.func)} is not implemented in the generator")
-
-    def visit_name(self, nodo):
-        print("Visitando nodo de tipo Name")
-        self.codigo_intermedio.append(f"LOAD {nodo.id}")
-
-    def visit_binop(self, nodo):
-        print("Visitando nodo de tipo BinOp")
-        self.visit(nodo.left)
-        self.visit(nodo.right)
-        op_map = {
-            ast.Add: "ADD",
-            ast.Sub: "SUB",
-            ast.Mult: "MUL",
-            ast.Div: "DIV"
-        }
-        if isinstance(nodo.op, ast.Add):
-            self.codigo_intermedio.append(op_map[ast.Add])
-        elif isinstance(nodo.op, ast.Sub):
-            self.codigo_intermedio.append(op_map[ast.Sub])
-        elif isinstance(nodo.op, ast.Mult):
-            self.codigo_intermedio.append(op_map[ast.Mult])
-        elif isinstance(nodo.op, ast.Div):
-            self.codigo_intermedio.append(op_map[ast.Div])
-
-    def visit_num(self, nodo):
-        print("Visitando nodo de tipo Num")
-        self.codigo_intermedio.append(f"PUSH {nodo.n}")
-
-    def visit_constant(self, nodo):
-        print("Visitando nodo de tipo Constant")
-        if isinstance(nodo.value, str):
-            self.codigo_intermedio.append(f"PUSH \"{nodo.value}\"")
-        elif isinstance(nodo.value, bool):
-            self.codigo_intermedio.append(f"PUSH {int(nodo.value)}")
-        elif nodo.value is None:
-            self.codigo_intermedio.append("PUSH None")
-        else:
-            raise NotImplementedError(f"Constant value {nodo.value} of type {type(nodo.value)} is not implemented in the generator")
-
-if __name__ == "__main__":
-    from analizador_sintactico import AnalizadorSintactico
-
-    analizador_sintactico = AnalizadorSintactico()
-    arbol = analizador_sintactico.analizar_codigo("analisis.txt")
-
-    generador_codigo = GeneradorCodigo()
-    codigo_objeto = generador_codigo.generar_codigo(arbol)
-
-    print("""=====================================================
-              Código Objeto
-    =====================================================""")
-    for instruccion in codigo_objeto:
-        print(instruccion)
+    def imprimir_codigo_intermedio(self):
+        for instruccion in self.codigo_intermedio:
+            print(instruccion)

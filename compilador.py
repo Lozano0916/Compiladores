@@ -2,7 +2,7 @@
 from analizador_lexico import lexer
 from analizador_sintactico import AnalizadorSintactico
 from analizador_semantico import AnalizadorSemantico
-from codigo_objeto import GeneradorCodigo
+from codigo_objeto import GeneradorCodigoIntermedio
 
 
 def analizar_todo(nombre_archivo):
@@ -34,10 +34,11 @@ analizador_semantico.analizar(arbol_abstracto)
 
 # Generador de código objeto
 print("""=====================================================
-          Generador de Código Objeto
+          Generador de Código Objeto e intermedio
 =====================================================""")
-generador_codigo = GeneradorCodigo()
-codigo_objeto = generador_codigo.generar_codigo(arbol_abstracto)
-for instruccion in codigo_objeto:
-    print(instruccion)
+generador_codigo_intermedio = GeneradorCodigoIntermedio()
+generador_codigo_intermedio.generar_codigo(arbol_abstracto)
+generador_codigo_intermedio.imprimir_codigo_intermedio()
+
+
 
